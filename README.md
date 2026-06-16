@@ -10,9 +10,9 @@ By default, the search tracks:
 
 - overall most clustered seed
 - most clustered seed for each resource
-- both `Purity unchanged` and `Purity random` scenarios
+- `Purity unchanged` scenario
 
-Optional least-clustered tracking can also be enabled.
+Optional `Purity random`, least-clustered tracking, and least-only/random-only runs can also be enabled.
 
 Each result includes:
 
@@ -83,6 +83,18 @@ Enable least-clustered records:
 dotnet run -c Release -- --subset --subset-count=8 --include-least --max-minutes=180
 ```
 
+Run both unchanged and random-purity scenarios:
+
+```powershell
+dotnet run -c Release -- --random --max-minutes=180
+```
+
+Run least-only for random purity:
+
+```powershell
+dotnet run -c Release -- --random --no-unchanged --least --no-most --max-minutes=180
+```
+
 Short test run:
 
 ```powershell
@@ -121,6 +133,34 @@ Fixed subset size for every resource. Still capped by the available node count.
 
 Also computes least-clustered records. Disabled by default for performance.
 
+`--least`
+
+Alias for `--include-least`.
+
+`--no-most`
+
+Disables most-clustered records. Use with `--least` for least-only searches.
+
+`--most`
+
+Explicitly enables most-clustered records. Enabled by default.
+
+`--random`
+
+Also computes the `Purity random` scenario. Disabled by default for performance.
+
+`--no-random`
+
+Disables the `Purity random` scenario.
+
+`--unchanged`
+
+Explicitly enables the `Purity unchanged` scenario. Enabled by default.
+
+`--no-unchanged`
+
+Disables the `Purity unchanged` scenario. Use with `--random` for random-only searches.
+
 `--start=N`
 
 Signed int32 seed to start from. Default is `int.MinValue`.
@@ -155,6 +195,8 @@ If `--output` is not provided, the program chooses a parameter-specific filename
 
 - `results\clustered-seed-result-all-nodes.txt`
 - `results\clustered-seed-result-all-nodes-with-least.txt`
+- `results\clustered-seed-result-all-nodes-with-random.txt`
+- `results\clustered-seed-result-all-nodes-least-only-random-only.txt`
 - `results\clustered-seed-result-subset-percent-20.txt`
 - `results\clustered-seed-result-subset-percent-20-with-least.txt`
 - `results\clustered-seed-result-subset-count-8.txt`
@@ -164,5 +206,5 @@ This keeps different search modes from overwriting each other.
 ## Notes
 
 - Subset mode is much more expensive than all-node mode.
-- `Purity random` consumes extra RNG during generation, so resource positions can differ from `Purity unchanged`.
+- `Purity random` consumes extra RNG during generation, so resource positions can differ from `Purity unchanged`. Enable it with `--random`.
 - Existing result/state files are safe to keep; rerunning the same command continues from the matching state file.

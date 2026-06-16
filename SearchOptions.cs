@@ -11,10 +11,15 @@ public sealed record SearchOptions(
     ClusteringMode ClusteringMode,
     double SubsetFraction,
     int? SubsetCount,
+    bool IncludeMost,
     bool IncludeLeast)
 {
     public string ResumeKey =>
-        FormattableString.Invariant($"{ClusteringMode}|subsetFraction={SubsetFraction:R}|subsetCount={SubsetCount?.ToString() ?? ""}|includeLeast={IncludeLeast}|start={StartSeedUnsigned}|count={SeedCount}");
+        FormattableString.Invariant($"{ClusteringMode}|subsetFraction={SubsetFraction:R}|subsetCount={SubsetCount?.ToString() ?? ""}|includeMost={IncludeMost}|includeLeast={IncludeLeast}|includeUnchanged={IncludeUnchanged}|includeRandom={IncludeRandom}|start={StartSeedUnsigned}|count={SeedCount}");
+
+    public bool IncludeUnchanged { get; init; } = true;
+
+    public bool IncludeRandom { get; init; }
 
     public static SearchOptions FromArgs(string[] args)
     {
@@ -32,7 +37,10 @@ public sealed record SearchOptions(
         var clusteringMode = ClusteringMode.AllNodes;
         var subsetFraction = 0.20;
         int? subsetCount = null;
+        var includeMost = true;
         var includeLeast = false;
+        var includeUnchanged = true;
+        var includeRandom = false;
 
         foreach (var arg in args)
         {
@@ -64,6 +72,36 @@ public sealed record SearchOptions(
                 || arg.Equals("--least", StringComparison.OrdinalIgnoreCase))
             {
                 includeLeast = true;
+            }
+            else if (arg.Equals("--no-most", StringComparison.OrdinalIgnoreCase)
+                || arg.Equals("--disable-most", StringComparison.OrdinalIgnoreCase))
+            {
+                includeMost = false;
+            }
+            else if (arg.Equals("--include-most", StringComparison.OrdinalIgnoreCase)
+                || arg.Equals("--most", StringComparison.OrdinalIgnoreCase))
+            {
+                includeMost = true;
+            }
+            else if (arg.Equals("--include-random", StringComparison.OrdinalIgnoreCase)
+                || arg.Equals("--random", StringComparison.OrdinalIgnoreCase))
+            {
+                includeRandom = true;
+            }
+            else if (arg.Equals("--no-random", StringComparison.OrdinalIgnoreCase)
+                || arg.Equals("--disable-random", StringComparison.OrdinalIgnoreCase))
+            {
+                includeRandom = false;
+            }
+            else if (arg.Equals("--include-unchanged", StringComparison.OrdinalIgnoreCase)
+                || arg.Equals("--unchanged", StringComparison.OrdinalIgnoreCase))
+            {
+                includeUnchanged = true;
+            }
+            else if (arg.Equals("--no-unchanged", StringComparison.OrdinalIgnoreCase)
+                || arg.Equals("--disable-unchanged", StringComparison.OrdinalIgnoreCase))
+            {
+                includeUnchanged = false;
             }
             else if (arg.StartsWith("--max-minutes=", StringComparison.OrdinalIgnoreCase)
                 && double.TryParse(arg["--max-minutes=".Length..], out var parsedMinutes))
@@ -126,9 +164,19 @@ public sealed record SearchOptions(
                 """);
         }
 
+        if (!includeMost && !includeLeast)
+        {
+            throw new ArgumentException("Nothing to compute. Enable --most and/or --least.");
+        }
+
+        if (!includeUnchanged && !includeRandom)
+        {
+            throw new ArgumentException("No purity scenario selected. Enable --unchanged and/or --random.");
+        }
+
         if (!outputWasExplicit)
         {
-            outputPath = Path.Combine(resultsDirectory, GetDefaultOutputFileName(clusteringMode, subsetFraction, subsetCount, includeLeast));
+            outputPath = Path.Combine(resultsDirectory, GetDefaultOutputFileName(clusteringMode, subsetFraction, subsetCount, includeMost, includeLeast, includeUnchanged, includeRandom));
         }
 
         return new SearchOptions(
@@ -142,7 +190,12 @@ public sealed record SearchOptions(
             clusteringMode,
             subsetFraction,
             subsetCount,
-            includeLeast);
+            includeMost,
+            includeLeast)
+        {
+            IncludeUnchanged = includeUnchanged,
+            IncludeRandom = includeRandom,
+        };
     }
 
     public int GetSubsetSize(int resourceNodeCount)
@@ -156,19 +209,40 @@ public sealed record SearchOptions(
         return Math.Clamp(Math.Max(4, requested), 1, resourceNodeCount);
     }
 
-    private static string GetDefaultOutputFileName(ClusteringMode clusteringMode, double subsetFraction, int? subsetCount, bool includeLeast)
+    private static string GetDefaultOutputFileName(
+        ClusteringMode clusteringMode,
+        double subsetFraction,
+        int? subsetCount,
+        bool includeMost,
+        bool includeLeast,
+        bool includeUnchanged,
+        bool includeRandom)
     {
-        var leastSuffix = includeLeast ? "-with-least" : "";
+        var objectiveSuffix = (includeMost, includeLeast) switch
+        {
+            (true, false) => "",
+            (true, true) => "-with-least",
+            (false, true) => "-least-only",
+            _ => "-no-objectives",
+        };
+        var scenarioSuffix = (includeUnchanged, includeRandom) switch
+        {
+            (true, false) => "",
+            (true, true) => "-with-random",
+            (false, true) => "-random-only",
+            _ => "-no-scenarios",
+        };
+
         if (clusteringMode == ClusteringMode.AllNodes)
         {
-            return $"clustered-seed-result-all-nodes{leastSuffix}.txt";
+            return $"clustered-seed-result-all-nodes{objectiveSuffix}{scenarioSuffix}.txt";
         }
 
         var subsetSuffix = subsetCount is { } count
             ? $"count-{count}"
             : FormattableString.Invariant($"percent-{Math.Round(subsetFraction * 100.0, 4):0.####}");
 
-        return $"clustered-seed-result-subset-{subsetSuffix}{leastSuffix}.txt";
+        return $"clustered-seed-result-subset-{subsetSuffix}{objectiveSuffix}{scenarioSuffix}.txt";
     }
 
     private static string FindDefaultWorldJson(string baseDirectory, string projectDirectory)

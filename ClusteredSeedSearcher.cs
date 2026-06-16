@@ -129,11 +129,17 @@ public sealed class ClusteredSeedSearcher
                         {
                             var seed = unchecked((int)(options.StartSeedUnsigned + (ulong)offset));
 
-                            var normalScore = ScoreSeed(seed, state.NormalBuffers, randomizePurity: false);
-                            state.NormalRecords.Consider(normalScore, state.NormalBuffers, PurityScenario.Unchanged, options.IncludeLeast);
+                            if (options.IncludeUnchanged)
+                            {
+                                var normalScore = ScoreSeed(seed, state.NormalBuffers, randomizePurity: false);
+                                state.NormalRecords.Consider(normalScore, state.NormalBuffers, PurityScenario.Unchanged, options.IncludeMost, options.IncludeLeast);
+                            }
 
-                            var randomScore = ScoreSeed(seed, state.RandomBuffers, randomizePurity: true);
-                            state.RandomRecords.Consider(randomScore, state.RandomBuffers, PurityScenario.Random, options.IncludeLeast);
+                            if (options.IncludeRandom)
+                            {
+                                var randomScore = ScoreSeed(seed, state.RandomBuffers, randomizePurity: true);
+                                state.RandomRecords.Consider(randomScore, state.RandomBuffers, PurityScenario.Random, options.IncludeMost, options.IncludeLeast);
+                            }
                         }
 
                         MergeWorkerRecords(state);
@@ -686,7 +692,10 @@ public sealed class ClusteredSeedSearcher
         var builder = new StringBuilder();
         builder.AppendLine(finished ? "Finished clustered seed search" : "Clustered seed search - best records so far");
         builder.AppendLine(CultureInfo.InvariantCulture, $"Clustering mode: {_options?.ClusteringMode}");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"Most clustered records: {(_options?.IncludeMost == true ? "enabled" : "disabled")}");
         builder.AppendLine(CultureInfo.InvariantCulture, $"Least clustered records: {(_options?.IncludeLeast == true ? "enabled" : "disabled")}");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"Purity unchanged scenario: {(_options?.IncludeUnchanged == true ? "enabled" : "disabled")}");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"Purity random scenario: {(_options?.IncludeRandom == true ? "enabled" : "disabled")}");
         if (_options?.ClusteringMode == ClusteringMode.Subset)
         {
             var subsetText = _options.SubsetCount is { } subsetCount
@@ -701,9 +710,20 @@ public sealed class ClusteredSeedSearcher
         builder.AppendLine(CultureInfo.InvariantCulture, $"Elapsed: {elapsed}");
         builder.AppendLine();
 
-        AppendScenario(builder, "Purity unchanged", normalRecords);
-        builder.AppendLine();
-        AppendScenario(builder, "Purity random", randomRecords);
+        if (_options?.IncludeUnchanged == true)
+        {
+            AppendScenario(builder, "Purity unchanged", normalRecords);
+        }
+
+        if (_options?.IncludeRandom == true)
+        {
+            if (_options?.IncludeUnchanged == true)
+            {
+                builder.AppendLine();
+            }
+
+            AppendScenario(builder, "Purity random", randomRecords);
+        }
 
         return builder.ToString();
     }
@@ -711,17 +731,24 @@ public sealed class ClusteredSeedSearcher
     private void AppendScenario(StringBuilder builder, string title, SearchRecords records)
     {
         builder.AppendLine($"== {title} ==");
-        AppendCandidate(builder, "Overall most clustered", records.OverallMost, includeResourceDetails: true);
+        if ((_options?.IncludeMost).GetValueOrDefault())
+        {
+            AppendCandidate(builder, "Overall most clustered", records.OverallMost, includeResourceDetails: true);
+        }
+
         if ((_options?.IncludeLeast).GetValueOrDefault())
         {
             AppendCandidate(builder, "Overall least clustered", records.OverallLeast, includeResourceDetails: true);
         }
 
-        builder.AppendLine();
-        builder.AppendLine("Most clustered by resource:");
-        for (var i = 0; i < _resources.Length; i++)
+        if ((_options?.IncludeMost).GetValueOrDefault())
         {
-            AppendCandidate(builder, $"  {_resources[i].GetDisplayName()}", records.ResourceMost[i], includeResourceDetails: false, resource: _resources[i]);
+            builder.AppendLine();
+            builder.AppendLine("Most clustered by resource:");
+            for (var i = 0; i < _resources.Length; i++)
+            {
+                AppendCandidate(builder, $"  {_resources[i].GetDisplayName()}", records.ResourceMost[i], includeResourceDetails: false, resource: _resources[i]);
+            }
         }
 
         if ((_options?.IncludeLeast).GetValueOrDefault())
@@ -785,17 +812,28 @@ public sealed class ClusteredSeedSearcher
         var sessionProcessed = Math.Max(0, Volatile.Read(ref _processedSeeds) - Volatile.Read(ref _sessionStartOffset));
         var ratio = totalSeeds == 0 ? 1.0 : (double)processed / totalSeeds;
         var seedsPerSecond = stopwatch.Elapsed.TotalSeconds <= 0.0 ? 0.0 : sessionProcessed / stopwatch.Elapsed.TotalSeconds;
-        Candidate? normalMost;
-        Candidate? randomMost;
+        Candidate? normalCandidate;
+        Candidate? randomCandidate;
 
         lock (_recordsLock)
         {
-            normalMost = _normalPurityRecords.OverallMost;
-            randomMost = _randomPurityRecords.OverallMost;
+            normalCandidate = GetProgressCandidate(_normalPurityRecords);
+            randomCandidate = GetProgressCandidate(_randomPurityRecords);
+        }
+
+        var progressParts = new List<string>();
+        if (_options?.IncludeUnchanged == true)
+        {
+            progressParts.Add($"unchanged best {DescribeProgressCandidate(normalCandidate)}");
+        }
+
+        if (_options?.IncludeRandom == true)
+        {
+            progressParts.Add($"random best {DescribeProgressCandidate(randomCandidate)}");
         }
 
         var line = FormattableString.Invariant(
-            $"Processed {processed:N0}/{totalSeeds:N0} ({ratio:P4}) | elapsed {stopwatch.Elapsed:hh\\:mm\\:ss} | {seedsPerSecond:N0} seeds/s | unchanged best {DescribeProgressCandidate(normalMost)} | random best {DescribeProgressCandidate(randomMost)}");
+            $"Processed {processed:N0}/{totalSeeds:N0} ({ratio:P4}) | elapsed {stopwatch.Elapsed:hh\\:mm\\:ss} | {seedsPerSecond:N0} seeds/s | {string.Join(" | ", progressParts)}");
 
         if (Console.IsOutputRedirected)
         {
@@ -806,6 +844,13 @@ public sealed class ClusteredSeedSearcher
             var width = Math.Max(20, Console.WindowWidth - 1);
             Console.Write("\r" + line.PadRight(width)[..width]);
         }
+    }
+
+    private Candidate? GetProgressCandidate(SearchRecords records)
+    {
+        return _options?.IncludeMost == true
+            ? records.OverallMost
+            : records.OverallLeast;
     }
 
     private static string DescribeProgressCandidate(Candidate? candidate)
@@ -935,9 +980,14 @@ public sealed class ClusteredSeedSearcher
 
         public Candidate?[] ResourceLeast { get; }
 
-        public void Consider(ScoredSeed score, SearchBuffers buffers, PurityScenario scenario, bool includeLeast)
+        public void Consider(
+            ScoredSeed score,
+            SearchBuffers buffers,
+            PurityScenario scenario,
+            bool includeMost,
+            bool includeLeast)
         {
-            if (OverallMost is null || score.MostScore > OverallMost.RankScore)
+            if (includeMost && (OverallMost is null || score.MostScore > OverallMost.RankScore))
             {
                 OverallMost = new Candidate(score.MostScore, score.Seed, scenario, ScorePerspective.Most, null);
             }
@@ -954,10 +1004,13 @@ public sealed class ClusteredSeedSearcher
                     continue;
                 }
 
-                var mostClusterLevel = buffers.MostClusterLevels[resourceIndex];
-                if (ResourceMost[resourceIndex] is null || mostClusterLevel > ResourceMost[resourceIndex]!.RankScore)
+                if (includeMost)
                 {
-                    ResourceMost[resourceIndex] = new Candidate(mostClusterLevel, score.Seed, scenario, ScorePerspective.Most, null);
+                    var mostClusterLevel = buffers.MostClusterLevels[resourceIndex];
+                    if (ResourceMost[resourceIndex] is null || mostClusterLevel > ResourceMost[resourceIndex]!.RankScore)
+                    {
+                        ResourceMost[resourceIndex] = new Candidate(mostClusterLevel, score.Seed, scenario, ScorePerspective.Most, null);
+                    }
                 }
 
                 if (!includeLeast)
