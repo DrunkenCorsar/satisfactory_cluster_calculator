@@ -34,7 +34,7 @@ The Satisfactory world node layout is included as static project configuration a
 From this folder:
 
 ```powershell
-cd F:\satisfactory_cluster_calculator
+cd C:\<your_path>\satisfactory_cluster_calculator
 dotnet build
 ```
 
