@@ -41,12 +41,12 @@ dotnet build
 Run in Release mode for realistic performance:
 
 ```powershell
-dotnet run -c Release
+dotnet run -c Release -- --max-minutes=180
 ```
 
 ## Resume Behavior
 
-Searches run in time slices. For testing, the default max runtime is currently 1 minute.
+Searches run in time slices. Every launch must specify a runtime limit with `--max-seconds=N` or `--max-minutes=N`.
 
 When the time slice ends, the program writes:
 
@@ -62,25 +62,25 @@ The resume file is selected/validated using execution parameters such as cluster
 Default all-node search:
 
 ```powershell
-dotnet run -c Release
+dotnet run -c Release -- --max-minutes=180
 ```
 
 Subset clustering with default 20% subset size:
 
 ```powershell
-dotnet run -c Release -- --subset
+dotnet run -c Release -- --subset --max-minutes=180
 ```
 
 Subset clustering with a fixed subset size of 8:
 
 ```powershell
-dotnet run -c Release -- --subset --subset-count=8
+dotnet run -c Release -- --subset --subset-count=8 --max-minutes=180
 ```
 
 Enable least-clustered records:
 
 ```powershell
-dotnet run -c Release -- --subset --subset-count=8 --include-least
+dotnet run -c Release -- --subset --subset-count=8 --include-least --max-minutes=180
 ```
 
 Short test run:
@@ -135,11 +135,11 @@ Worker thread count. Default is the logical processor count.
 
 `--max-minutes=N`
 
-Maximum runtime for this launch before saving and exiting. Default is currently 1 minute for testing.
+Required unless `--max-seconds` is used. Maximum runtime for this launch before saving and exiting.
 
 `--max-seconds=N`
 
-Maximum runtime in seconds. Useful for testing resume behavior.
+Required unless `--max-minutes` is used. Maximum runtime in seconds. Useful for testing resume behavior.
 
 `--output=PATH`
 

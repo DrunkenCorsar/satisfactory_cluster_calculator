@@ -1,7 +1,17 @@
 using System.Diagnostics;
 using SatisfactoryClusterCalculator;
 
-var options = SearchOptions.FromArgs(args);
+SearchOptions options;
+try
+{
+    options = SearchOptions.FromArgs(args);
+}
+catch (ArgumentException ex)
+{
+    Console.Error.WriteLine(ex.Message);
+    return;
+}
+
 var outputPath = Path.GetFullPath(options.OutputPath);
 Directory.CreateDirectory(Path.GetDirectoryName(outputPath) ?? Directory.GetCurrentDirectory());
 

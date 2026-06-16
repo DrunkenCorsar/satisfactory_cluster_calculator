@@ -28,7 +28,7 @@ public sealed record SearchOptions(
         var seedCount = 1UL << 32;
         var degreeOfParallelism = Environment.ProcessorCount;
         var openResult = true;
-        var maxRunTime = TimeSpan.FromMinutes(1);
+        TimeSpan? maxRunTime = null;
         var clusteringMode = ClusteringMode.AllNodes;
         var subsetFraction = 0.20;
         int? subsetCount = null;
@@ -112,6 +112,20 @@ public sealed record SearchOptions(
             }
         }
 
+        if (maxRunTime is null)
+        {
+            throw new ArgumentException("""
+                Missing required runtime limit.
+
+                Add one of:
+                  --max-seconds=N
+                  --max-minutes=N
+
+                Example:
+                  dotnet run -c Release -- --subset --subset-percent=20 --max-minutes=180
+                """);
+        }
+
         if (!outputWasExplicit)
         {
             outputPath = Path.Combine(resultsDirectory, GetDefaultOutputFileName(clusteringMode, subsetFraction, subsetCount, includeLeast));
@@ -124,7 +138,7 @@ public sealed record SearchOptions(
             Math.Min(seedCount, 1UL << 32),
             degreeOfParallelism,
             openResult,
-            maxRunTime,
+            maxRunTime.Value,
             clusteringMode,
             subsetFraction,
             subsetCount,
