@@ -1,0 +1,15 @@
+F:\satisfactory_cluster_calculator\bin\Release\net10.0\default-world.json
+F:\satisfactory_cluster_calculator\bin\Release\net10.0\SatisfactoryClusterCalculator.exe
+F:\satisfactory_cluster_calculator\bin\Release\net10.0\SatisfactoryClusterCalculator.deps.json
+F:\satisfactory_cluster_calculator\bin\Release\net10.0\SatisfactoryClusterCalculator.runtimeconfig.json
+F:\satisfactory_cluster_calculator\bin\Release\net10.0\SatisfactoryClusterCalculator.dll
+F:\satisfactory_cluster_calculator\bin\Release\net10.0\SatisfactoryClusterCalculator.pdb
+F:\satisfactory_cluster_calculator\obj\Release\net10.0\SatisfactoryClusterCalculator.GeneratedMSBuildEditorConfig.editorconfig
+F:\satisfactory_cluster_calculator\obj\Release\net10.0\SatisfactoryClusterCalculator.AssemblyInfoInputs.cache
+F:\satisfactory_cluster_calculator\obj\Release\net10.0\SatisfactoryClusterCalculator.AssemblyInfo.cs
+F:\satisfactory_cluster_calculator\obj\Release\net10.0\SatisfactoryClusterCalculator.csproj.CoreCompileInputs.cache
+F:\satisfactory_cluster_calculator\obj\Release\net10.0\SatisfactoryClusterCalculator.dll
+F:\satisfactory_cluster_calculator\obj\Release\net10.0\refint\SatisfactoryClusterCalculator.dll
+F:\satisfactory_cluster_calculator\obj\Release\net10.0\SatisfactoryClusterCalculator.pdb
+F:\satisfactory_cluster_calculator\obj\Release\net10.0\SatisfactoryClusterCalculator.genruntimeconfig.cache
+F:\satisfactory_cluster_calculator\obj\Release\net10.0\ref\SatisfactoryClusterCalculator.dll

@@ -1,0 +1,66 @@
+Clustered seed search - best records so far
+Clustering mode: AllNodes
+Processed seeds: 63,049,728 / 4,294,967,296
+Resume offset: 63,049,728
+State file: F:\satisfactory_cluster_calculator\clustered-seed-result-all-nodes.txt.state.json
+Elapsed: 00:01:00.4968871
+
+== Purity unchanged ==
+Overall most clustered: seed=-2146368027, record_score=0.822711294, overall=0.822711294, average=0.827162573, worst=0.797487377
+Overall least clustered: seed=-2143924379, record_score=0.779572744, overall=0.779572744, average=0.789645019, worst=0.722496523
+
+Most clustered by resource:
+  Coal: seed=-2094536287, record_score=0.847975120, overall=0.803325658, average=0.805628864, worst=0.790274157
+  Crude Oil: seed=-2129886108, record_score=0.868412256, overall=0.807461635, average=0.811089464, worst=0.786903938
+  Bauxite: seed=-2119669516, record_score=0.901960766, overall=0.806998003, average=0.810531276, worst=0.786976122
+  Copper: seed=-2084980539, record_score=0.848405314, overall=0.805039772, average=0.810753699, worst=0.772660851
+  Caterium: seed=-2117636465, record_score=0.901031934, overall=0.813165707, average=0.817003148, worst=0.791420204
+  Iron: seed=-2102618386, record_score=0.827692483, overall=0.796900884, average=0.798971680, worst=0.785166371
+  Uranium: seed=-2144788908, record_score=0.983529797, overall=0.812099193, average=0.817077866, worst=0.783886716
+  Quartz: seed=-2107408258, record_score=0.900604820, overall=0.809172503, average=0.813649325, worst=0.783803847
+  SAM: seed=-2112711356, record_score=0.894255775, overall=0.807856492, average=0.812157318, worst=0.783485143
+  Limestone: seed=-2121526196, record_score=0.836021558, overall=0.802967021, average=0.806439569, worst=0.783289248
+  Sulfur: seed=-2115832165, record_score=0.904877823, overall=0.812254032, average=0.815700253, worst=0.792725446
+
+Least clustered by resource:
+  Coal: seed=-2090887754, record_score=0.762330580, overall=0.800867822, average=0.807668512, worst=0.762330580
+  Crude Oil: seed=-2090493023, record_score=0.750662138, overall=0.793059604, average=0.800541509, worst=0.750662138
+  Bauxite: seed=-2100059330, record_score=0.737555466, overall=0.790431993, average=0.799763144, worst=0.737555466
+  Copper: seed=-2132434688, record_score=0.758689526, overall=0.797539828, average=0.804395764, worst=0.758689526
+  Caterium: seed=-2105764124, record_score=0.736198520, overall=0.791289457, average=0.801011387, worst=0.736198520
+  Iron: seed=-2087984653, record_score=0.776193939, overall=0.808174041, average=0.813817588, worst=0.776193939
+  Uranium: seed=-2099360640, record_score=0.711836715, overall=0.784949887, average=0.797852212, worst=0.711836715
+  Quartz: seed=-2093002500, record_score=0.738908046, overall=0.796133946, average=0.806232635, worst=0.738908046
+  SAM: seed=-2100170097, record_score=0.735976542, overall=0.790705752, average=0.800363848, worst=0.735976542
+  Limestone: seed=-2122705598, record_score=0.772129289, overall=0.806730578, average=0.812836688, worst=0.772129289
+  Sulfur: seed=-2096251403, record_score=0.736558401, overall=0.792537666, average=0.802416360, worst=0.736558401
+
+== Purity random ==
+Overall most clustered: seed=-2100175697, record_score=0.824311865, overall=0.824311865, average=0.829677016, worst=0.793909344
+Overall least clustered: seed=-2124881746, record_score=0.780169249, overall=0.780169249, average=0.790305140, worst=0.722732536
+
+Most clustered by resource:
+  Coal: seed=-2128738053, record_score=0.847844753, overall=0.801336519, average=0.805759385, worst=0.776273612
+  Crude Oil: seed=-2140577581, record_score=0.874033385, overall=0.797423194, average=0.804351562, worst=0.758162447
+  Bauxite: seed=-2110322084, record_score=0.898263118, overall=0.808831033, average=0.814203356, worst=0.778387864
+  Copper: seed=-2143975151, record_score=0.848744671, overall=0.798549997, average=0.804587316, worst=0.764338518
+  Caterium: seed=-2105304664, record_score=0.905357869, overall=0.807318264, average=0.813685027, worst=0.771239937
+  Iron: seed=-2087845458, record_score=0.827605391, overall=0.799659502, average=0.802404512, worst=0.784104441
+  Uranium: seed=-2130014002, record_score=0.987887792, overall=0.815286236, average=0.820744540, worst=0.784355845
+  Quartz: seed=-2097562184, record_score=0.906133551, overall=0.808260985, average=0.810950661, worst=0.793019493
+  SAM: seed=-2132839080, record_score=0.894478212, overall=0.808536590, average=0.811536829, worst=0.791535234
+  Limestone: seed=-2129508728, record_score=0.832383950, overall=0.800118402, average=0.803024836, worst=0.783648608
+  Sulfur: seed=-2087984144, record_score=0.904513034, overall=0.806674078, average=0.809251500, worst=0.792068684
+
+Least clustered by resource:
+  Coal: seed=-2135435952, record_score=0.765172167, overall=0.800213686, average=0.806397484, worst=0.765172167
+  Crude Oil: seed=-2101399966, record_score=0.749874421, overall=0.792356521, average=0.799853362, worst=0.749874421
+  Bauxite: seed=-2125814398, record_score=0.733994860, overall=0.789107141, average=0.798832838, worst=0.733994860
+  Copper: seed=-2123010682, record_score=0.763363729, overall=0.797649553, average=0.803699992, worst=0.763363729
+  Caterium: seed=-2110827823, record_score=0.737754739, overall=0.797815610, average=0.808414588, worst=0.737754739
+  Iron: seed=-2117881981, record_score=0.774926928, overall=0.807832485, average=0.813639348, worst=0.774926928
+  Uranium: seed=-2104505135, record_score=0.711003294, overall=0.784337654, average=0.797279012, worst=0.711003294
+  Quartz: seed=-2128802340, record_score=0.736669544, overall=0.792411303, average=0.802248084, worst=0.736669544
+  SAM: seed=-2120506989, record_score=0.740567600, overall=0.795732843, average=0.805467886, worst=0.740567600
+  Limestone: seed=-2128723505, record_score=0.771107626, overall=0.806233651, average=0.812432361, worst=0.771107626
+  Sulfur: seed=-2098931590, record_score=0.734353079, overall=0.790012505, average=0.799834756, worst=0.734353079
