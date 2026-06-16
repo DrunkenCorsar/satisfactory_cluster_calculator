@@ -1,0 +1,18 @@
+# Build output
+bin/
+obj/
+
+# IDE/user files
+.vs/
+*.user
+*.suo
+
+# Search results and resume state
+results/*
+!results/.gitkeep
+clustered-seed-result*.txt
+clustered-seed-result*.txt.state.json
+
+# Logs/temp files
+*.log
+*.tmp

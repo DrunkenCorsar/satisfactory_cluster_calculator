@@ -3,6 +3,7 @@ using SatisfactoryClusterCalculator;
 
 var options = SearchOptions.FromArgs(args);
 var outputPath = Path.GetFullPath(options.OutputPath);
+Directory.CreateDirectory(Path.GetDirectoryName(outputPath) ?? Directory.GetCurrentDirectory());
 
 try
 {

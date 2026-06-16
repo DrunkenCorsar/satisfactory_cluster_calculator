@@ -21,7 +21,8 @@ public sealed record SearchOptions(
         var baseDirectory = AppContext.BaseDirectory;
         var projectDirectory = Directory.GetCurrentDirectory();
         var worldJsonPath = FindDefaultWorldJson(baseDirectory, projectDirectory);
-        var outputPath = Path.Combine(projectDirectory, "clustered-seed-result.txt");
+        var resultsDirectory = Path.Combine(projectDirectory, "results");
+        var outputPath = Path.Combine(resultsDirectory, "clustered-seed-result.txt");
         var outputWasExplicit = false;
         var startSeed = int.MinValue;
         var seedCount = 1UL << 32;
@@ -113,7 +114,7 @@ public sealed record SearchOptions(
 
         if (!outputWasExplicit)
         {
-            outputPath = Path.Combine(projectDirectory, GetDefaultOutputFileName(clusteringMode, subsetFraction, subsetCount, includeLeast));
+            outputPath = Path.Combine(resultsDirectory, GetDefaultOutputFileName(clusteringMode, subsetFraction, subsetCount, includeLeast));
         }
 
         return new SearchOptions(

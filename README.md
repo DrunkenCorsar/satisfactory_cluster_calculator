@@ -50,8 +50,8 @@ Searches run in time slices. For testing, the default max runtime is currently 1
 
 When the time slice ends, the program writes:
 
-- a human-readable result file, for example `clustered-seed-result-subset-percent-20.txt`
-- a resume state file next to it, for example `clustered-seed-result-subset-percent-20.txt.state.json`
+- a human-readable result file under `results\`, for example `results\clustered-seed-result-subset-percent-20.txt`
+- a resume state file next to it, for example `results\clustered-seed-result-subset-percent-20.txt.state.json`
 
 Run the same command again to continue from the saved offset.
 
@@ -153,11 +153,11 @@ Do not open the result file when the run exits.
 
 If `--output` is not provided, the program chooses a parameter-specific filename:
 
-- `clustered-seed-result-all-nodes.txt`
-- `clustered-seed-result-all-nodes-with-least.txt`
-- `clustered-seed-result-subset-percent-20.txt`
-- `clustered-seed-result-subset-percent-20-with-least.txt`
-- `clustered-seed-result-subset-count-8.txt`
+- `results\clustered-seed-result-all-nodes.txt`
+- `results\clustered-seed-result-all-nodes-with-least.txt`
+- `results\clustered-seed-result-subset-percent-20.txt`
+- `results\clustered-seed-result-subset-percent-20-with-least.txt`
+- `results\clustered-seed-result-subset-count-8.txt`
 
 This keeps different search modes from overwriting each other.
 
