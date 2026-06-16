@@ -99,16 +99,17 @@ public sealed class ClusteredSeedSearcher
         using var saveTimer = new Timer(_ => SaveBestSnapshot(totalSeeds, stopwatch, finished: false), null, SaveInterval, SaveInterval);
 
         SetCursorVisible(false);
-        Console.CancelKeyPress += (_, eventArgs) =>
+        using var interruptCancellation = new CancellationTokenSource();
+        ConsoleCancelEventHandler cancelHandler = (_, eventArgs) =>
         {
             eventArgs.Cancel = true;
-            SaveBestSnapshot(totalSeeds, stopwatch, finished: false);
-            Environment.Exit(0);
+            interruptCancellation.Cancel();
         };
+        Console.CancelKeyPress += cancelHandler;
 
         try
         {
-            using var cancellation = new CancellationTokenSource(options.MaxRunTime);
+            var deadlineTimestamp = Stopwatch.GetTimestamp() + (long)(options.MaxRunTime.TotalSeconds * Stopwatch.Frequency);
             var nextOffset = checked((long)resumeOffset);
             var totalOffset = checked((long)totalSeeds);
             var chunkSize = options.ClusteringMode == ClusteringMode.Subset ? SubsetChunkSize : AllNodesChunkSize;
@@ -116,7 +117,8 @@ public sealed class ClusteredSeedSearcher
                 .Select(_ => Task.Run(() =>
                 {
                     var state = CreateWorkerState();
-                    while (!cancellation.IsCancellationRequested)
+                    while (!interruptCancellation.IsCancellationRequested
+                        && Stopwatch.GetTimestamp() < deadlineTimestamp)
                     {
                         var rangeStart = Interlocked.Add(ref nextOffset, chunkSize) - chunkSize;
                         if (rangeStart >= totalOffset)
@@ -158,6 +160,7 @@ public sealed class ClusteredSeedSearcher
         }
         finally
         {
+            Console.CancelKeyPress -= cancelHandler;
             SetCursorVisible(true);
         }
 
